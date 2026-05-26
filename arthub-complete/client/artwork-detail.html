@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ArtHub - Artwork Detail</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      color: #111;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav {
+      background-color: #fff;
+      border-bottom: 1px solid #ddd;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav a.logo {
+      font-size: 22px;
+      font-weight: bold;
+      text-decoration: none;
+      color: #111;
+    }
+    nav a.logo span { color: #6D1A2A; }
+
+    nav a.back {
+      font-size: 13px;
+      color: #777;
+      text-decoration: none;
+    }
+    nav a.back:hover { color: #111; }
+
+    .container {
+      max-width: 960px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    /* MAIN LAYOUT */
+    .detail-layout {
+      display: flex;
+      gap: 40px;
+      align-items: flex-start;
+    }
+
+    /* LEFT - image */
+    .artwork-img-wrap {
+      flex: 1;
+      position: relative;
+    }
+
+    .artwork-img {
+      width: 100%;
+      aspect-ratio: 3/4;
+      background: linear-gradient(160deg, #222 0%, #666 50%, #aaa 100%);
+      display: block;
+    }
+
+    .sold-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .sold-overlay.show { opacity: 1; }
+
+    .sold-stamp {
+      border: 2px solid rgba(255,255,255,0.8);
+      color: white;
+      padding: 8px 20px;
+      font-size: 13px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      transform: rotate(-8deg);
+    }
+
+    /* RIGHT - info */
+    .artwork-info {
+      flex: 1;
+    }
+
+    .artwork-category {
+      font-size: 12px;
+      color: #6D1A2A;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+
+    .artwork-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+
+    .artwork-artist {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 16px;
+    }
+
+    .artwork-artist a {
+      color: #6D1A2A;
+      text-decoration: none;
+    }
+    .artwork-artist a:hover { text-decoration: underline; }
+
+    /* Rating */
+    .rating-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .stars { color: #6D1A2A; font-size: 16px; }
+    .rating-count { font-size: 13px; color: #888; }
+
+    /* Price */
+    .price-box {
+      border: 1px solid #ddd;
+      padding: 16px;
+      margin-bottom: 20px;
+      background: #fff;
+    }
+
+    .price-usd {
+      font-size: 26px;
+      font-weight: bold;
+      color: #111;
+    }
+
+    .price-usd.sold { color: #aaa; text-decoration: line-through; }
+
+    .price-converted {
+      font-size: 13px;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    .currency-select {
+      margin-top: 8px;
+      padding: 5px 8px;
+      border: 1px solid #ccc;
+      font-size: 13px;
+      font-family: Arial, sans-serif;
+      color: #111;
+      background: #fff;
+    }
+
+    /* Stock */
+    .stock-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: #555;
+    }
+
+    .stock-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #2e8b57;
+    }
+    .stock-dot.low { background: #c8960a; }
+    .stock-dot.out { background: #aaa; }
+
+    /* Details list */
+    .details-list {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .details-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .details-list li span:first-child { color: #888; }
+    .details-list li span:last-child { color: #111; font-weight: 500; }
+
+    /* Buttons */
+    .btn-buy {
+      width: 100%;
+      padding: 12px;
+      background: #6D1A2A;
+      color: white;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+    .btn-buy:hover { background: #8B2236; }
+    .btn-buy:disabled {
+      background: #ccc;
+      color: #888;
+      cursor: not-allowed;
+    }
+
+    .btn-contact {
+      width: 100%;
+      padding: 12px;
+      background: none;
+      color: #111;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      cursor: pointer;
+      letter-spacing: 1px;
+    }
+    .btn-contact:hover { border-color: #111; }
+
+    /* REVIEWS SECTION */
+    .section-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 40px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #6D1A2A;
+      display: inline-block;
+    }
+
+    .reviews-list { margin-bottom: 30px; }
+
+    .review-card {
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .reviewer-name { font-size: 14px; font-weight: bold; }
+    .review-stars { color: #6D1A2A; font-size: 14px; }
+    .review-date { font-size: 12px; color: #aaa; }
+    .review-text { font-size: 13px; color: #555; line-height: 1.6; }
+
+    /* ADD REVIEW */
+    .add-review {
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin-bottom: 40px;
+    }
+
+    .add-review h3 { font-size: 15px; margin-bottom: 14px; }
+
+    .add-review label {
+      display: block;
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 4px;
+      margin-top: 12px;
+    }
+
+    .add-review select,
+    .add-review textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      font-size: 13px;
+      font-family: Arial, sans-serif;
+      box-sizing: border-box;
+      color: #111;
+      background: #fff;
+    }
+
+    .add-review textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .add-review select:focus,
+    .add-review textarea:focus { border-color: #111; outline: none; }
+
+    .btn-review {
+      margin-top: 12px;
+      padding: 9px 20px;
+      background: #6D1A2A;
+      color: white;
+      border: none;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .btn-review:hover { background: #8B2236; }
+
+    /* MODAL */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-bg.open { display: flex; }
+
+    .modal {
+      background: #fff;
+      padding: 28px;
+      width: 380px;
+      max-width: 90vw;
+      position: relative;
+      border: 1px solid #ddd;
+    }
+
+    .modal h3 { font-size: 18px; margin-bottom: 12px; }
+    .modal p { font-size: 13px; color: #555; margin-bottom: 20px; line-height: 1.6; }
+
+    .modal-close {
+      position: absolute;
+      top: 12px; right: 14px;
+      background: none; border: none;
+      font-size: 18px; cursor: pointer; color: #888;
+    }
+
+    .modal-actions { display: flex; gap: 10px; }
+
+    .modal-actions button {
+      flex: 1; padding: 10px;
+      font-size: 13px; cursor: pointer; border: 1px solid #ccc;
+    }
+
+    .modal-actions .confirm {
+      background: #6D1A2A; color: white; border-color: #6D1A2A;
+    }
+    .modal-actions .confirm:hover { background: #8B2236; }
+    .modal-actions .cancel:hover { border-color: #111; }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      color: #bbb;
+      border-top: 1px solid #eee;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Art<span>Hub</span></a>
+  <a href="index.html" class="back">← Back to gallery</a>
+</nav>
+
+<div class="container">
+
+  <div class="detail-layout">
+
+    <!-- LEFT: Image -->
+    <div class="artwork-img-wrap">
+      <div class="artwork-img" id="artworkImg"></div>
+      <div class="sold-overlay" id="soldOverlay">
+        <div class="sold-stamp">Sold Out</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Info -->
+    <div class="artwork-info">
+
+      <div class="artwork-category">Abstract</div>
+      <div class="artwork-title">Silence in Blue</div>
+      <div class="artwork-artist">by <a href="#">Elena Moreau</a></div>
+
+      <div class="rating-row">
+        <span class="stars">★★★★★</span>
+        <span class="rating-count">(12 reviews)</span>
+      </div>
+
+      <!-- Price box -->
+      <div class="price-box">
+        <div class="price-usd" id="priceUsd">€480</div>
+      </div>
+
+      <!-- Stock -->
+      <div class="stock-row" id="stockRow">
+        <div class="stock-dot low" id="stockDot"></div>
+        <span id="stockText">Last 1 remaining</span>
+      </div>
+
+      <!-- Details -->
+      <ul class="details-list">
+        <li><span>Medium</span><span>Oil on canvas</span></li>
+        <li><span>Dimensions</span><span>60 × 80 cm</span></li>
+        <li><span>Year</span><span>2023</span></li>
+        <li><span>Style</span><span>Abstract</span></li>
+      </ul>
+
+      <button class="btn-buy" id="buyBtn" onclick="window.location.href='checkout.html'">Buy Original — €480</button>
+
+    </div>
+  </div>
+
+  <!-- REVIEWS -->
+  <div class="section-title">Reviews</div>
+
+  <div class="reviews-list">
+    <div class="review-card">
+      <div class="review-header">
+        <div>
+          <span class="reviewer-name">James T.</span>
+          <span class="review-stars"> ★★★★★</span>
+        </div>
+        <span class="review-date">March 2024</span>
+      </div>
+      <div class="review-text">Absolutely stunning piece. The colors are even more vibrant in person. Very well packaged and shipped quickly. Highly recommend Elena's work.</div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-header">
+        <div>
+          <span class="reviewer-name">Sofia K.</span>
+          <span class="review-stars"> ★★★★☆</span>
+        </div>
+        <span class="review-date">January 2024</span>
+      </div>
+      <div class="review-text">Beautiful artwork, exactly as shown. Took a bit longer to arrive but the quality is worth it. Would buy again.</div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-header">
+        <div>
+          <span class="reviewer-name">Marco R.</span>
+          <span class="review-stars"> ★★★★★</span>
+        </div>
+        <span class="review-date">November 2023</span>
+      </div>
+      <div class="review-text">A true original. Hangs perfectly in my living room. The artist was also very communicative throughout the process.</div>
+    </div>
+  </div>
+
+  <!-- ADD REVIEW -->
+  <div class="add-review">
+    <h3>Leave a review</h3>
+
+    <label for="reviewRating">Rating</label>
+    <select id="reviewRating">
+      <option value="5">★★★★★ — Excellent</option>
+      <option value="4">★★★★☆ — Good</option>
+      <option value="3">★★★☆☆ — Average</option>
+      <option value="2">★★☆☆☆ — Poor</option>
+      <option value="1">★☆☆☆☆ — Terrible</option>
+    </select>
+
+    <label for="reviewText">Your review</label>
+    <textarea id="reviewText" placeholder="Write your review here..."></textarea>
+
+    <button class="btn-review" onclick="submitReview()">Submit Review</button>
+  </div>
+
+</div>
+
+<!-- BUY MODAL -->
+<div class="modal-bg" id="buyModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h3>Confirm Purchase</h3>
+    <p>You are about to purchase <strong>Silence in Blue</strong> by Elena Moreau for <strong>$480</strong>.<br><br>This is a one-of-a-kind original. Once purchased it will be marked as Sold Out.</p>
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeModal()">Cancel</button>
+      <button class="confirm" onclick="confirmBuy()">Confirm & Buy</button>
+    </div>
+  </div>
+</div>
+
+<footer>© 2024 ArtHub</footer>
+
+<script>
+  let isSold = false;
+
+  function openModal() {
+    document.getElementById('buyModal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('buyModal').classList.remove('open');
+  }
+
+  function confirmBuy() {
+    isSold = true;
+
+    // Show sold overlay
+    document.getElementById('soldOverlay').classList.add('show');
+
+    // Update price
+    document.getElementById('priceUsd').classList.add('sold');
+    document.getElementById('priceConverted').textContent = '—';
+
+    // Update stock
+    document.getElementById('stockDot').className = 'stock-dot out';
+    document.getElementById('stockText').textContent = 'Sold out';
+
+    // Disable button
+    const btn = document.getElementById('buyBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sold Out';
+
+    closeModal();
+  }
+
+  function submitReview() {
+    const text = document.getElementById('reviewText').value.trim();
+    const rating = document.getElementById('reviewRating').value;
+    if (!text) { alert('Please write a review before submitting.'); return; }
+
+    const stars = '★'.repeat(parseInt(rating)) + '☆'.repeat(5 - parseInt(rating));
+
+    const card = document.createElement('div');
+    card.className = 'review-card';
+    card.innerHTML = `
+      <div class="review-header">
+        <div>
+          <span class="reviewer-name">You</span>
+          <span class="review-stars"> ${stars}</span>
+        </div>
+        <span class="review-date">Just now</span>
+      </div>
+      <div class="review-text">${text}</div>
+    `;
+
+    document.querySelector('.reviews-list').appendChild(card);
+    document.getElementById('reviewText').value = '';
+    document.getElementById('reviewRating').value = '5';
+  }
+
+  // Close modal on background click
+  document.getElementById('buyModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+</script>
+
+</body>
+</html>

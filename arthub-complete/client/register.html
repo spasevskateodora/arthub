@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ArtHub - Register</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; color: #111; margin: 0; padding: 0; }
+    nav { border-bottom: 1px solid #ddd; padding: 0 2rem; height: 56px; display: flex; align-items: center; justify-content: space-between; background: #fff; }
+    .nav-logo { font-family: Georgia, serif; font-size: 1.5rem; font-weight: bold; color: #111; text-decoration: none; }
+    .nav-logo span { color: #6D1A2A; }
+    .nav-back { font-size: 13px; color: #777; text-decoration: none; }
+    .nav-back:hover { color: #111; }
+    .page { min-height: calc(100vh - 56px); display: flex; align-items: center; justify-content: center; padding: 3rem 1rem; }
+    .box { width: 100%; max-width: 420px; border: 1px solid #ddd; padding: 2.5rem 2rem; background: #fff; }
+    .box h2 { font-family: Georgia, serif; font-size: 1.8rem; font-weight: 400; margin-bottom: 0.3rem; }
+    .box h2 span { color: #6D1A2A; font-style: italic; }
+    .subtitle { font-size: 13px; color: #777; margin-bottom: 2rem; }
+    .subtitle a { color: #6D1A2A; text-decoration: none; }
+    label { display: block; font-size: 13px; color: #555; margin-bottom: 4px; margin-top: 14px; }
+    input { width: 100%; padding: 9px 10px; border: 1px solid #ccc; font-family: Arial, sans-serif; font-size: 14px; color: #111; background: #fff; box-sizing: border-box; }
+    input:focus { border-color: #111; outline: none; }
+    input.error { border-color: #b00020; }
+    .err-msg { font-size: 12px; color: #b00020; display: none; margin-top: 3px; }
+    .err-msg.show { display: block; }
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 40px; }
+    .pw-wrap button { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 14px; color: #888; }
+    .btn-register { width: 100%; margin-top: 20px; padding: 10px; background: #6D1A2A; color: white; border: none; font-size: 14px; cursor: pointer; }
+    .btn-register:hover { background: #8B2236; }
+    .login-link { display: block; text-align: center; margin-top: 14px; font-size: 13px; color: #777; }
+    .login-link a { color: #6D1A2A; text-decoration: none; }
+    .error-box { display: none; background: #ffebee; border: 1px solid #f5c2c2; padding: 10px 14px; font-size: 13px; color: #b00020; margin-bottom: 14px; }
+    .error-box.show { display: block; }
+    .success { display: none; text-align: center; padding: 30px 0; }
+    .success.show { display: block; }
+    .success p { font-size: 14px; color: #555; margin-top: 8px; }
+    footer { text-align: center; padding: 20px; font-size: 12px; color: #bbb; border-top: 1px solid #eee; margin-top: 40px; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Art<span>Hub</span></a>
+  <a href="index.html" class="nav-back">← Back to gallery</a>
+</nav>
+
+<div class="page">
+  <div class="box">
+
+    <div id="formSection">
+      <h2>Create an <span>account</span></h2>
+      <p class="subtitle">Already have one? <a href="login.html">Sign in</a></p>
+      <p class="subtitle" style="margin-top:-12px; font-size:12px; color:#aaa;">Register to browse and purchase original artworks.</p>
+
+      <div class="error-box" id="errorBox"></div>
+
+      <label for="firstName">First name</label>
+      <input type="text" id="firstName" placeholder="e.g. Ana" />
+      <div class="err-msg" id="firstNameErr">Please enter your first name.</div>
+
+      <label for="lastName">Last name</label>
+      <input type="text" id="lastName" placeholder="e.g. Petrov" />
+      <div class="err-msg" id="lastNameErr">Please enter your last name.</div>
+
+      <label for="email">Email address</label>
+      <input type="email" id="email" placeholder="you@email.com" />
+      <div class="err-msg" id="emailErr">Please enter a valid email address.</div>
+
+      <label for="password">Password</label>
+      <div class="pw-wrap">
+        <input type="password" id="password" placeholder="Min. 6 characters" />
+        <button type="button" onclick="togglePw('password')">👁</button>
+      </div>
+      <div class="err-msg" id="pwErr">Password must be at least 6 characters.</div>
+
+      <label for="confirmPassword">Confirm password</label>
+      <div class="pw-wrap">
+        <input type="password" id="confirmPassword" placeholder="Repeat password" />
+        <button type="button" onclick="togglePw('confirmPassword')">👁</button>
+      </div>
+      <div class="err-msg" id="confirmPwErr">Passwords do not match.</div>
+
+      <button class="btn-register" onclick="doRegister()">Create Account</button>
+      <p class="login-link">Already registered? <a href="login.html">Sign in here</a></p>
+    </div>
+
+    <div class="success" id="successSection">
+      <div style="font-size:32px;">✓</div>
+      <h2>Account created!</h2>
+      <p>Welcome to ArtHub! Redirecting you now...</p>
+    </div>
+
+  </div>
+</div>
+
+<footer>© 2024 ArtHub</footer>
+
+<script>
+  function togglePw(id) {
+    const input = document.getElementById(id);
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+
+  async function doRegister() {
+    let ok = true;
+
+    const check = (inputId, errId, condition) => {
+      document.getElementById(inputId).classList.toggle('error', !condition);
+      document.getElementById(errId).classList.toggle('show', !condition);
+      if (!condition) ok = false;
+    };
+
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const pw = document.getElementById('password').value;
+    const cpw = document.getElementById('confirmPassword').value;
+
+    check('firstName', 'firstNameErr', firstName.length > 0);
+    check('lastName', 'lastNameErr', lastName.length > 0);
+    check('email', 'emailErr', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+    check('password', 'pwErr', pw.length >= 6);
+    check('confirmPassword', 'confirmPwErr', pw === cpw && cpw.length > 0);
+
+    if (!ok) return;
+
+    try {
+      const res = await fetch('/api/users/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ firstName, lastName, email, password: pw })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        document.getElementById('errorBox').textContent = data.error || 'Registration failed.';
+        document.getElementById('errorBox').classList.add('show');
+        return;
+      }
+
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      document.getElementById('formSection').style.display = 'none';
+      document.getElementById('successSection').classList.add('show');
+      setTimeout(() => window.location.href = 'index.html', 2000);
+
+    } catch (err) {
+      document.getElementById('errorBox').textContent = 'Server error. Try again.';
+      document.getElementById('errorBox').classList.add('show');
+    }
+  }
+</script>
+
+</body>
+</html>

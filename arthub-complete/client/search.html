@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ArtHub - Browse</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      color: #111;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav {
+      background-color: #fff;
+      border-bottom: 1px solid #ddd;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav a.logo {
+      font-size: 22px;
+      font-weight: bold;
+      text-decoration: none;
+      color: #111;
+    }
+    nav a.logo span { color: #6D1A2A; }
+
+    .nav-right {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .nav-right a {
+      font-size: 13px;
+      color: #777;
+      text-decoration: none;
+    }
+    .nav-right a:hover { color: #111; }
+    .nav-right a.active { color: #6D1A2A; font-weight: bold; }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* SEARCH BAR TOP */
+    .search-hero {
+      background: #111;
+      padding: 36px 20px;
+      text-align: center;
+    }
+
+    .search-hero h1 {
+      color: #fff;
+      font-size: 24px;
+      margin-bottom: 16px;
+      font-weight: normal;
+    }
+
+    .search-hero h1 span { color: #6D1A2A; font-style: italic; }
+
+    .search-bar-wrap {
+      display: flex;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .search-bar-wrap input {
+      flex: 1;
+      padding: 11px 14px;
+      border: none;
+      font-size: 14px;
+      font-family: Arial, sans-serif;
+      outline: none;
+      color: #111;
+    }
+
+    .search-bar-wrap button {
+      padding: 11px 20px;
+      background: #6D1A2A;
+      color: white;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .search-bar-wrap button:hover { background: #8B2236; }
+
+    /* MAIN LAYOUT */
+    .main-layout {
+      display: flex;
+      gap: 28px;
+      padding: 28px 0 60px;
+    }
+
+    /* SIDEBAR FILTERS */
+    .sidebar {
+      width: 220px;
+      flex-shrink: 0;
+    }
+
+    .filter-group {
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .filter-group h3 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #555;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .filter-group label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #333;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+
+    .filter-group input[type="checkbox"] {
+      accent-color: #6D1A2A;
+      cursor: pointer;
+    }
+
+    .filter-group input[type="radio"] {
+      accent-color: #6D1A2A;
+      cursor: pointer;
+    }
+
+    .count-badge {
+      margin-left: auto;
+      font-size: 11px;
+      color: #aaa;
+    }
+
+    /* price range */
+    .price-inputs {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .price-inputs input {
+      width: 80px;
+      padding: 6px 8px;
+      border: 1px solid #ccc;
+      font-size: 13px;
+      font-family: Arial, sans-serif;
+      color: #111;
+      background: #fff;
+    }
+    .price-inputs input:focus { border-color: #111; outline: none; }
+    .price-inputs span { font-size: 13px; color: #888; }
+
+    .btn-apply-filter {
+      width: 100%;
+      margin-top: 10px;
+      padding: 8px;
+      background: #111;
+      color: white;
+      border: none;
+      font-size: 12px;
+      cursor: pointer;
+      letter-spacing: 1px;
+    }
+    .btn-apply-filter:hover { background: #6D1A2A; }
+
+    .btn-clear {
+      width: 100%;
+      margin-top: 6px;
+      padding: 7px;
+      background: none;
+      color: #888;
+      border: 1px solid #ddd;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .btn-clear:hover { border-color: #111; color: #111; }
+
+    /* RESULTS AREA */
+    .results-area { flex: 1; }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .results-count {
+      font-size: 13px;
+      color: #777;
+    }
+    .results-count span { color: #111; font-weight: bold; }
+
+    .sort-select {
+      padding: 7px 10px;
+      border: 1px solid #ccc;
+      font-size: 13px;
+      font-family: Arial, sans-serif;
+      color: #111;
+      background: #fff;
+      cursor: pointer;
+    }
+    .sort-select:focus { outline: none; border-color: #111; }
+
+    /* ACTIVE FILTERS */
+    .active-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .filter-tag {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: #111;
+      color: white;
+      font-size: 12px;
+    }
+
+    .filter-tag button {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+      padding: 0;
+    }
+
+    /* GRID */
+    .artwork-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .artwork-card {
+      background: #fff;
+      border: 1px solid #ddd;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: box-shadow 0.2s;
+    }
+    .artwork-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+    .artwork-card.is-sold { opacity: 0.8; }
+
+    .artwork-img-wrap {
+      position: relative;
+      aspect-ratio: 3/4;
+      overflow: hidden;
+    }
+
+    .artwork-img-ph { width: 100%; height: 100%; }
+    .ph-1 { background: linear-gradient(160deg, #111 0%, #444 50%, #888 100%); }
+    .ph-2 { background: linear-gradient(160deg, #eee 0%, #aaa 50%, #555 100%); }
+    .ph-3 { background: linear-gradient(160deg, #222 0%, #666 40%, #bbb 100%); }
+    .ph-4 { background: linear-gradient(160deg, #ddd 0%, #888 50%, #333 100%); }
+    .ph-5 { background: linear-gradient(160deg, #0a0a0a 0%, #3a3a3a 50%, #7a7a7a 100%); }
+    .ph-6 { background: linear-gradient(160deg, #f5f5f5 0%, #ccc 40%, #666 100%); }
+
+    .sold-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .sold-stamp {
+      border: 2px solid rgba(255,255,255,0.8);
+      color: white;
+      padding: 6px 16px;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      transform: rotate(-8deg);
+    }
+
+    .artwork-info {
+      padding: 12px;
+      border-top: 1px solid #eee;
+    }
+
+    .artwork-category {
+      font-size: 11px;
+      color: #6D1A2A;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .artwork-title {
+      font-size: 15px;
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+
+    .artwork-artist {
+      font-size: 12px;
+      color: #777;
+      margin-bottom: 8px;
+    }
+
+    .artwork-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .artwork-price {
+      font-size: 15px;
+      font-weight: bold;
+    }
+    .artwork-price.sold { color: #aaa; text-decoration: line-through; }
+
+    .artwork-rating { font-size: 12px; color: #6D1A2A; }
+
+    /* NO RESULTS */
+    .no-results {
+      display: none;
+      text-align: center;
+      padding: 60px 20px;
+      color: #aaa;
+    }
+    .no-results.show { display: block; }
+    .no-results p { font-size: 15px; margin-top: 8px; }
+
+    /* PAGINATION */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 32px;
+    }
+
+    .page-btn {
+      width: 34px;
+      height: 34px;
+      border: 1px solid #ddd;
+      background: none;
+      font-size: 13px;
+      color: #777;
+      cursor: pointer;
+    }
+    .page-btn:hover { border-color: #111; color: #111; }
+    .page-btn.active { background: #6D1A2A; color: white; border-color: #6D1A2A; }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      color: #bbb;
+      border-top: 1px solid #eee;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Art<span>Hub</span></a>
+  <div class="nav-right">
+    <a href="index.html">Home</a>
+    <a href="search.html" class="active">Browse</a>
+    <a href="login.html" style="color:#777;">Sign in</a>
+    <a href="register.html" style="background:#6D1A2A; color:white; padding:5px 12px;">Register</a>
+  </div>
+</nav>
+
+<!-- SEARCH HERO -->
+<div class="search-hero">
+  <h1>Browse <span>original</span> artworks</h1>
+  <div class="search-bar-wrap">
+    <input type="text" id="searchInput" placeholder="Search by title or artist..." onkeyup="liveSearch()" />
+    <button onclick="doSearch()">Search</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="main-layout">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+      <div class="filter-group">
+        <h3>Category</h3>
+        <label><input type="checkbox" checked onchange="applyFilters()"> All <span class="count-badge">124</span></label>
+        <label><input type="checkbox" onchange="applyFilters()"> Abstract <span class="count-badge">38</span></label>
+        <label><input type="checkbox" onchange="applyFilters()"> Realism <span class="count-badge">29</span></label>
+        <label><input type="checkbox" onchange="applyFilters()"> Portrait <span class="count-badge">22</span></label>
+        <label><input type="checkbox" onchange="applyFilters()"> Landscape <span class="count-badge">21</span></label>
+        <label><input type="checkbox" onchange="applyFilters()"> Digital <span class="count-badge">14</span></label>
+      </div>
+
+      <div class="filter-group">
+        <h3>Availability</h3>
+        <label><input type="radio" name="avail" value="all" checked onchange="applyFilters()"> All</label>
+        <label><input type="radio" name="avail" value="available" onchange="applyFilters()"> Available only</label>
+        <label><input type="radio" name="avail" value="sold" onchange="applyFilters()"> Sold out</label>
+      </div>
+
+      <div class="filter-group">
+        <h3>Price (USD)</h3>
+        <div class="price-inputs">
+          <input type="number" id="minPrice" placeholder="Min" min="0" />
+          <span>—</span>
+          <input type="number" id="maxPrice" placeholder="Max" min="0" />
+        </div>
+        <button class="btn-apply-filter" onclick="applyFilters()">Apply</button>
+      </div>
+
+      <button class="btn-clear" onclick="clearFilters()">Clear all filters</button>
+
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results-area">
+
+      <div class="results-header">
+        <div class="results-count">Showing <span id="resultsCount">6</span> results</div>
+        <select class="sort-select" onchange="applyFilters()">
+          <option>Sort: Newest</option>
+          <option>Sort: Price Low–High</option>
+          <option>Sort: Price High–Low</option>
+          <option>Sort: Top Rated</option>
+        </select>
+      </div>
+
+      <!-- ACTIVE FILTER TAGS -->
+      <div class="active-filters" id="activeTags"></div>
+
+      <!-- GRID -->
+      <div class="artwork-grid" id="artworkGrid">
+
+        <a href="artwork-detail.html" class="artwork-card" data-category="abstract" data-price="480" data-available="true">
+          <div class="artwork-img-wrap">
+            <div class="artwork-img-ph ph-1"></div>
+          </div>
+          <div class="artwork-info">
+            <div class="artwork-category">Abstract</div>
+            <div class="artwork-title">Silence in Blue</div>
+            <div class="artwork-artist">by Elena Moreau</div>
+            <div class="artwork-footer">
+              <span class="artwork-price">€480</span>
+              <span class="artwork-rating">★★★★★</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="artwork-detail.html" class="artwork-card" data-category="realism" data-price="1200" data-available="true">
+          <div class="artwork-img-wrap">
+            <div class="artwork-img-ph ph-2"></div>
+          </div>
+          <div class="artwork-info">
+            <div class="artwork-category">Realism</div>
+            <div class="artwork-title">Morning Light</div>
+            <div class="artwork-artist">by Jonas Weber</div>
+            <div class="artwork-footer">
+              <span class="artwork-price">€1,200</span>
+              <span class="artwork-rating">★★★★☆</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="artwork-detail.html" class="artwork-card" data-category="portrait" data-price="750" data-available="true">
+          <div class="artwork-img-wrap">
+            <div class="artwork-img-ph ph-3"></div>
+          </div>
+          <div class="artwork-info">
+            <div class="artwork-category">Portrait</div>
+            <div class="artwork-title">The Wanderer</div>
+            <div class="artwork-artist">by Amara Diallo</div>
+            <div class="artwork-footer">
+              <span class="artwork-price">€750</span>
+              <span class="artwork-rating">★★★★★</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="artwork-detail.html" class="artwork-card is-sold" data-category="landscape" data-price="920" data-available="false">
+          <div class="artwork-img-wrap">
+            <div class="artwork-img-ph ph-4"></div>
+            <div class="sold-overlay"><div class="sold-stamp">Sold Out</div></div>
+          </div>
+          <div class="artwork-info">
+            <div class="artwork-category">Landscape</div>
+            <div class="artwork-title">Autumn Fields</div>
+            <div class="artwork-artist">by Yuki Tanaka</div>
+            <div class="artwork-footer">
+              <span class="artwork-price sold">€920</span>
+              <span class="artwork-rating">★★★★★</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="artwork-detail.html" class="artwork-card" data-category="digital" data-price="320" data-available="true">
+          <div class="artwork-img-wrap">
+            <div class="artwork-img-ph ph-5"></div>
+          </div>
+          <div class="artwork-info">
+            <div class="artwork-category">Digital</div>
+            <div class="artwork-title">Neon Dreams</div>
+            <div class="artwork-artist">by Luca Ferretti</div>
+            <div class="artwork-footer">
+              <span class="artwork-price">€320</span>
+              <span class="artwork-rating">★★★★☆</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="artwork-detail.html" class="artwork-card" data-category="realism" data-price="1800" data-available="true">
+          <div class="artwork-img-wrap">
+            <div class="artwork-img-ph ph-6"></div>
+          </div>
+          <div class="artwork-info">
+            <div class="artwork-category">Realism</div>
+            <div class="artwork-title">Still Waters</div>
+            <div class="artwork-artist">by Marco Silva</div>
+            <div class="artwork-footer">
+              <span class="artwork-price">€1,800</span>
+              <span class="artwork-rating">★★★★☆</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+
+      <div class="no-results" id="noResults">
+        <div style="font-size:32px;">🔍</div>
+        <p>No artworks found. Try different filters.</p>
+      </div>
+
+      <div class="pagination">
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn">→</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer>© 2024 ArtHub</footer>
+
+<script>
+  function liveSearch() {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    const cards = document.querySelectorAll('.artwork-card');
+    let visible = 0;
+
+    cards.forEach(card => {
+      const title = card.querySelector('.artwork-title').textContent.toLowerCase();
+      const artist = card.querySelector('.artwork-artist').textContent.toLowerCase();
+      const match = title.includes(query) || artist.includes(query);
+      card.style.display = match ? 'block' : 'none';
+      if (match) visible++;
+    });
+
+    document.getElementById('resultsCount').textContent = visible;
+    document.getElementById('noResults').classList.toggle('show', visible === 0);
+  }
+
+  function doSearch() { liveSearch(); }
+
+  function applyFilters() {
+    const cards = document.querySelectorAll('.artwork-card');
+    const avail = document.querySelector('input[name="avail"]:checked').value;
+    const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
+    const maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity;
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    let visible = 0;
+
+    cards.forEach(card => {
+      const price = parseFloat(card.dataset.price);
+      const isAvail = card.dataset.available === 'true';
+      const title = card.querySelector('.artwork-title').textContent.toLowerCase();
+      const artist = card.querySelector('.artwork-artist').textContent.toLowerCase();
+
+      const availOk = avail === 'all' || (avail === 'available' && isAvail) || (avail === 'sold' && !isAvail);
+      const priceOk = price >= minPrice && price <= maxPrice;
+      const searchOk = !query || title.includes(query) || artist.includes(query);
+
+      const show = availOk && priceOk && searchOk;
+      card.style.display = show ? 'block' : 'none';
+      if (show) visible++;
+    });
+
+    document.getElementById('resultsCount').textContent = visible;
+    document.getElementById('noResults').classList.toggle('show', visible === 0);
+  }
+
+  function clearFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('minPrice').value = '';
+    document.getElementById('maxPrice').value = '';
+    document.querySelector('input[name="avail"][value="all"]').checked = true;
+    document.querySelectorAll('.filter-group input[type="checkbox"]').forEach(cb => cb.checked = false);
+    document.querySelectorAll('.artwork-card').forEach(c => c.style.display = 'block');
+    document.getElementById('resultsCount').textContent = 6;
+    document.getElementById('noResults').classList.remove('show');
+    document.getElementById('activeTags').innerHTML = '';
+  }
+</script>
+
+</body>
+</html>

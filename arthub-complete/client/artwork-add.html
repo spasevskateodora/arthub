@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ArtHub - Add Artwork</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; color: #111; margin: 0; padding: 0; }
+    nav { background: #fff; border-bottom: 1px solid #ddd; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+    nav a.logo { font-size: 22px; font-weight: bold; text-decoration: none; color: #111; }
+    nav a.logo span { color: #6D1A2A; }
+    .nav-right { display: flex; gap: 16px; align-items: center; }
+    .nav-right a { font-size: 13px; color: #777; text-decoration: none; }
+    .nav-right a:hover { color: #111; }
+    .admin-badge { font-size: 11px; background: #6D1A2A; color: white; padding: 2px 8px; }
+    .container { max-width: 680px; margin: 40px auto; padding: 0 20px; }
+    h1 { font-size: 22px; margin-bottom: 4px; }
+    .subtitle { font-size: 13px; color: #777; margin-bottom: 24px; }
+    .form-box { background: #fff; border: 1px solid #ddd; padding: 28px; }
+    label { display: block; font-size: 13px; color: #555; margin-bottom: 5px; margin-top: 16px; }
+    label span.req { color: #6D1A2A; }
+    input[type="text"], input[type="number"], textarea, select {
+      width: 100%; padding: 9px 10px; border: 1px solid #ccc;
+      font-size: 14px; font-family: Arial, sans-serif;
+      box-sizing: border-box; background: #fff; color: #111;
+    }
+    input:focus, textarea:focus, select:focus { border-color: #111; outline: none; }
+    input.error, select.error { border-color: #b00020; }
+    .err-msg { font-size: 12px; color: #b00020; display: none; margin-top: 3px; }
+    .err-msg.show { display: block; }
+    textarea { resize: vertical; min-height: 100px; }
+    .row-2 { display: flex; gap: 16px; }
+    .row-2 > div { flex: 1; }
+    .upload-area {
+      border: 2px dashed #ccc; padding: 30px; text-align: center;
+      cursor: pointer; transition: border-color 0.2s; margin-top: 5px; position: relative;
+    }
+    .upload-area:hover { border-color: #6D1A2A; }
+    .upload-area.has-image { border-style: solid; border-color: #111; padding: 0; }
+    .upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .upload-placeholder { pointer-events: none; }
+    .upload-placeholder .icon { font-size: 32px; margin-bottom: 8px; }
+    .upload-placeholder p { font-size: 13px; color: #888; margin: 0; }
+    .upload-placeholder p span { color: #6D1A2A; text-decoration: underline; }
+    #imagePreview { display: none; width: 100%; max-height: 320px; object-fit: contain; background: #f2f2f2; }
+    .upload-hint { font-size: 11px; color: #aaa; margin-top: 5px; }
+    .toggle-row { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+    .toggle-row label { margin: 0; font-size: 14px; color: #111; cursor: pointer; }
+    .toggle-row input[type="checkbox"] { width: 16px; height: 16px; accent-color: #6D1A2A; cursor: pointer; }
+    .form-actions { display: flex; gap: 12px; margin-top: 28px; padding-top: 20px; border-top: 1px solid #eee; }
+    .btn-save { padding: 10px 28px; background: #6D1A2A; color: white; border: none; font-size: 14px; cursor: pointer; }
+    .btn-save:hover { background: #8B2236; }
+    .btn-cancel { padding: 10px 28px; background: none; color: #555; border: 1px solid #ccc; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; text-align: center; }
+    .btn-cancel:hover { border-color: #111; color: #111; }
+    .success-msg { display: none; background: #f0f7f0; border: 1px solid #b2d8b2; padding: 14px 16px; font-size: 13px; color: #2e6b2e; margin-bottom: 20px; }
+    .success-msg.show { display: block; }
+    .error-msg { display: none; background: #ffebee; border: 1px solid #f5c2c2; padding: 14px 16px; font-size: 13px; color: #b00020; margin-bottom: 20px; }
+    .error-msg.show { display: block; }
+    footer { text-align: center; padding: 20px; font-size: 12px; color: #bbb; border-top: 1px solid #eee; margin-top: 60px; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Art<span>Hub</span></a>
+  <div class="nav-right">
+    <span class="admin-badge">Admin</span>
+    <a href="index.html">Gallery</a>
+    <a href="artwork-add.html">Add Artwork</a>
+    <a href="admin-dashboard.html">Dashboard</a>
+  </div>
+</nav>
+
+<div class="container">
+  <h1>Add New Artwork</h1>
+  <p class="subtitle">Fill in the details to publish a new artwork.</p>
+
+  <div class="success-msg" id="successMsg">✓ Artwork published! <a href="index.html">View in gallery →</a></div>
+  <div class="error-msg" id="errorMsg"></div>
+
+  <div class="form-box">
+
+    <label>Artwork Image <span class="req">*</span></label>
+    <div class="upload-area" id="uploadArea">
+      <input type="file" accept="image/*" id="imageInput" onchange="previewImage(event)" />
+      <div class="upload-placeholder" id="uploadPlaceholder">
+        <div class="icon">🖼️</div>
+        <p>Drag & drop or <span>browse</span> to upload</p>
+      </div>
+      <img id="imagePreview" alt="Preview" />
+    </div>
+    <p class="upload-hint">JPG, PNG or WEBP. Max 10MB.</p>
+    <div class="err-msg" id="imageErr">Please upload an image.</div>
+
+    <label for="title">Title <span class="req">*</span></label>
+    <input type="text" id="title" placeholder="e.g. Silence in Blue" />
+    <div class="err-msg" id="titleErr">Please enter a title.</div>
+
+    <label for="description">Description</label>
+    <textarea id="description" placeholder="Describe the artwork..."></textarea>
+
+    <div class="row-2">
+      <div>
+        <label for="category">Category <span class="req">*</span></label>
+        <select id="category">
+          <option value="">— Select —</option>
+        </select>
+        <div class="err-msg" id="categoryErr">Please select a category.</div>
+      </div>
+      <div>
+        <label for="medium">Medium</label>
+        <select id="medium">
+          <option value="">— Select —</option>
+          <option value="oil">Oil on canvas</option>
+          <option value="acrylic">Acrylic on canvas</option>
+          <option value="watercolor">Watercolor</option>
+          <option value="pencil">Pencil / Charcoal</option>
+          <option value="digital">Digital</option>
+          <option value="mixed">Mixed media</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row-2">
+      <div>
+        <label for="dimensions">Dimensions (cm)</label>
+        <input type="text" id="dimensions" placeholder="e.g. 60 × 80" />
+      </div>
+      <div>
+        <label for="year">Year</label>
+        <input type="number" id="year" placeholder="e.g. 2024" min="1900" max="2099" />
+      </div>
+    </div>
+
+    <label for="price">Price (EUR) <span class="req">*</span></label>
+    <input type="number" id="price" placeholder="e.g. 480" min="1" />
+    <div class="err-msg" id="priceErr">Please enter a valid price.</div>
+
+    <div class="toggle-row">
+      <input type="checkbox" id="available" checked />
+      <label for="available">Available for purchase</label>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-save" onclick="saveArtwork()">Publish Artwork</button>
+      <a href="index.html" class="btn-cancel">Cancel</a>
+    </div>
+
+  </div>
+</div>
+
+<footer>© 2024 ArtHub</footer>
+
+<script>
+  const token = localStorage.getItem('token');
+  if (!token) { alert('Admin access required. Please login.'); window.location.href = 'login.html'; }
+
+  // Load categories
+  fetch('/api/categories')
+    .then(r => r.json())
+    .then(cats => {
+      const sel = document.getElementById('category');
+      cats.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c._id;
+        opt.textContent = c.name;
+        sel.appendChild(opt);
+      });
+    });
+
+  function previewImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const preview = document.getElementById('imagePreview');
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+      document.getElementById('uploadPlaceholder').style.display = 'none';
+      document.getElementById('uploadArea').classList.add('has-image');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function saveArtwork() {
+    let ok = true;
+
+    const imageInput = document.getElementById('imageInput');
+    if (!imageInput.files || imageInput.files.length === 0) {
+      document.getElementById('imageErr').classList.add('show');
+      ok = false;
+    } else {
+      document.getElementById('imageErr').classList.remove('show');
+    }
+
+    const title = document.getElementById('title').value.trim();
+    document.getElementById('title').classList.toggle('error', !title);
+    document.getElementById('titleErr').classList.toggle('show', !title);
+    if (!title) ok = false;
+
+    const category = document.getElementById('category').value;
+    document.getElementById('category').classList.toggle('error', !category);
+    document.getElementById('categoryErr').classList.toggle('show', !category);
+    if (!category) ok = false;
+
+    const price = document.getElementById('price').value;
+    const priceOk = price && parseFloat(price) > 0;
+    document.getElementById('price').classList.toggle('error', !priceOk);
+    document.getElementById('priceErr').classList.toggle('show', !priceOk);
+    if (!priceOk) ok = false;
+
+    if (!ok) return;
+
+    const formData = new FormData();
+    formData.append('image', imageInput.files[0]);
+    formData.append('title', title);
+    formData.append('description', document.getElementById('description').value);
+    formData.append('category', category);
+    formData.append('medium', document.getElementById('medium').value);
+    formData.append('dimensions', document.getElementById('dimensions').value);
+    formData.append('year', document.getElementById('year').value);
+    formData.append('price', price);
+    formData.append('available', document.getElementById('available').checked);
+
+    try {
+      const res = await fetch('/api/artworks', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token },
+        body: formData
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        document.getElementById('successMsg').classList.add('show');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        document.getElementById('errorMsg').textContent = '❌ ' + data.error;
+        document.getElementById('errorMsg').classList.add('show');
+      }
+    } catch (err) {
+      document.getElementById('errorMsg').textContent = '❌ Server error. Try again.';
+      document.getElementById('errorMsg').classList.add('show');
+    }
+  }
+</script>
+
+</body>
+</html>

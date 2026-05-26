@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ArtHub — Original Art Marketplace</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --white: #FAFAFA; --off-white: #F2F2F2; --black: #0D0D0D;
+      --mid-gray: #5A5A5A; --light-gray: #C8C8C8; --border: #E0E0E0;
+      --burgundy: #6D1A2A; --burgundy-light: #8B2236;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--white); color: var(--black); font-family: 'DM Sans', sans-serif; font-weight: 300; }
+    nav { position: sticky; top: 0; z-index: 100; background: var(--white); border-bottom: 1px solid var(--border); padding: 0 3rem; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; font-weight: 600; color: var(--black); text-decoration: none; }
+    .nav-logo span { color: var(--burgundy); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; align-items: center; }
+    .nav-links a { text-decoration: none; color: var(--mid-gray); font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--black); }
+    .nav-actions { display: flex; gap: 1rem; align-items: center; }
+    .btn-ghost { background: none; border: 1px solid var(--black); color: var(--black); padding: 0.45rem 1.3rem; font-family: 'DM Sans', sans-serif; font-size: 0.78rem; letter-spacing: 0.07em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
+    .btn-ghost:hover { background: var(--black); color: var(--white); }
+    .btn-solid { background: var(--burgundy); border: 1px solid var(--burgundy); color: white; padding: 0.45rem 1.3rem; font-family: 'DM Sans', sans-serif; font-size: 0.78rem; letter-spacing: 0.07em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
+    .btn-solid:hover { background: var(--burgundy-light); }
+    .hero { padding: 5rem 3rem 3rem; display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; max-width: 1200px; margin: 0 auto; }
+    .hero-text { position: relative; }
+    .accent-bar { width: 3px; height: 60px; background: var(--burgundy); position: absolute; left: -20px; top: 8px; }
+    .hero-text h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.8rem, 5vw, 4.2rem); font-weight: 300; line-height: 1.08; margin-bottom: 1.5rem; }
+    .hero-text h1 em { font-style: italic; color: var(--burgundy); }
+    .hero-text p { color: var(--mid-gray); font-size: 0.95rem; line-height: 1.85; margin-bottom: 2rem; max-width: 400px; }
+    .hero-cta { display: flex; gap: 1rem; }
+    .hero-cta .btn-solid, .hero-cta .btn-ghost { padding: 0.75rem 2rem; font-size: 0.8rem; }
+    .hero-stats { display: flex; gap: 3rem; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+    .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 600; line-height: 1; }
+    .stat-label { font-size: 0.72rem; color: var(--mid-gray); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 0.2rem; }
+    .hero-image { position: relative; height: 480px; }
+    .hero-img-main { width: 78%; height: 100%; position: absolute; right: 0; top: 0; background: linear-gradient(160deg, #1a1a1a 0%, #3d3d3d 40%, #7a7a7a 100%); }
+    .hero-img-accent { width: 46%; height: 52%; position: absolute; left: 0; bottom: -24px; border: 5px solid var(--white); box-shadow: 0 8px 40px rgba(0,0,0,0.14); background: linear-gradient(160deg, #f0f0f0 0%, #b0b0b0 100%); }
+    .filters-section { padding: 2rem 3rem; max-width: 1200px; margin: 0 auto; border-top: 1px solid var(--border); }
+    .filters-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .filter-label { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid-gray); margin-right: 0.5rem; }
+    .filter-chip { padding: 0.38rem 1rem; border: 1px solid var(--border); background: none; font-family: 'DM Sans', sans-serif; font-size: 0.78rem; color: var(--mid-gray); cursor: pointer; transition: all 0.2s; letter-spacing: 0.05em; text-transform: uppercase; }
+    .filter-chip:hover { border-color: var(--black); color: var(--black); }
+    .filter-chip.active { background: var(--burgundy); color: white; border-color: var(--burgundy); }
+    .search-bar { margin-left: auto; display: flex; align-items: center; border: 1px solid var(--border); overflow: hidden; }
+    .search-bar input { padding: 0.42rem 1rem; border: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; color: var(--black); outline: none; width: 240px; }
+    .search-bar button { padding: 0.42rem 0.9rem; background: var(--black); border: none; color: var(--white); cursor: pointer; font-size: 0.85rem; }
+    .search-bar button:hover { background: var(--burgundy); }
+    .gallery-section { padding: 1.5rem 3rem 5rem; max-width: 1200px; margin: 0 auto; }
+    .section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 2rem; }
+    .section-title { font-family: 'Cormorant Garamond', serif; font-size: 1.9rem; font-weight: 400; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+    .artwork-card { background: var(--white); border: 1px solid var(--border); display: block; transition: transform 0.3s, box-shadow 0.3s; position: relative; text-decoration: none; color: inherit; }
+    .artwork-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.09); }
+    .artwork-img-wrap { position: relative; width: 100%; aspect-ratio: 3/4; overflow: hidden; }
+    .artwork-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .artwork-img-ph { width: 100%; height: 100%; background: linear-gradient(160deg, #222 0%, #666 50%, #aaa 100%); }
+    .sold-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; }
+    .sold-stamp { border: 2px solid rgba(255,255,255,0.8); color: white; padding: 6px 16px; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; transform: rotate(-8deg); }
+    .artwork-badge { position: absolute; top: 0.7rem; left: 0.7rem; z-index: 2; background: var(--burgundy); color: white; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.2rem 0.55rem; }
+    .artwork-info { padding: 0.9rem 1rem; border-top: 1px solid var(--border); }
+    .artwork-category { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--burgundy); margin-bottom: 0.3rem; font-weight: 500; }
+    .artwork-title { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 400; margin-bottom: 0.2rem; line-height: 1.3; }
+    .artwork-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 0.6rem; padding-top: 0.6rem; border-top: 1px solid var(--off-white); }
+    .artwork-price { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 600; }
+    .artwork-price.sold { color: var(--mid-gray); text-decoration: line-through; }
+    .btn-buy { width: 100%; margin-top: 0.75rem; padding: 0.5rem; background: var(--burgundy); border: none; color: white; font-family: 'DM Sans', sans-serif; font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
+    .btn-buy:hover { background: var(--burgundy-light); }
+    .btn-buy:disabled { background: var(--border); color: var(--mid-gray); cursor: not-allowed; }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--mid-gray); display: none; }
+    .empty-state.show { display: block; }
+    .pagination { display: flex; justify-content: center; gap: 0.4rem; margin-top: 3.5rem; }
+    .page-btn { width: 36px; height: 36px; border: 1px solid var(--border); background: none; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; color: var(--mid-gray); cursor: pointer; }
+    .page-btn.active { background: var(--burgundy); color: white; border-color: var(--burgundy); }
+    .inspiration-section { background: var(--black); color: var(--white); padding: 5rem 3rem; }
+    .inspiration-inner { max-width: 1200px; margin: 0 auto; }
+    .inspiration-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 0.6rem; }
+    .inspiration-header h2 { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 300; }
+    .insp-tag { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--burgundy-light); border: 1px solid var(--burgundy); padding: 0.2rem 0.6rem; }
+    .inspiration-sub { font-size: 0.85rem; color: #888; margin-bottom: 2.5rem; }
+    .inspiration-sub em { color: var(--burgundy-light); font-style: italic; }
+    .museum-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .museum-card { border: 1px solid #2a2a2a; }
+    .museum-card:hover { border-color: var(--burgundy); }
+    .museum-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+    .museum-img-ph { width: 100%; aspect-ratio: 4/3; background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%); }
+    .museum-info { padding: 1rem; border-top: 1px solid #2a2a2a; }
+    .museum-tag { display: inline-block; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--burgundy-light); margin-bottom: 0.4rem; }
+    .museum-info h4 { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 400; color: var(--white); margin-bottom: 0.3rem; }
+    .museum-info p { font-size: 0.73rem; color: #666; }
+    footer { background: var(--black); color: #555; padding: 2rem 3rem; text-align: center; font-size: 0.78rem; border-top: 1px solid #1a1a1a; }
+    footer a { color: var(--burgundy-light); text-decoration: none; }
+    .loading { text-align: center; padding: 40px; color: var(--mid-gray); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Art<span>Hub</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Gallery</a></li>
+    <li><a href="search.html">Browse</a></li>
+    <li><a href="inspiration.html">Inspiration</a></li>
+  </ul>
+  <div class="nav-actions" id="navActions">
+    <a href="login.html" style="font-size:0.78rem; color:var(--mid-gray); text-decoration:none; letter-spacing:0.05em;">Sign in</a>
+    <a href="register.html" class="btn-solid">Register</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-text">
+    <div class="accent-bar"></div>
+    <h1>Discover <em>original</em><br>art from around<br>the world</h1>
+    <p>Browse one-of-a-kind original artworks. Register to purchase directly from the collection.</p>
+    <div class="hero-cta">
+      <a href="search.html" class="btn-solid">Browse Gallery</a>
+      <a href="register.html" class="btn-ghost">Create Account</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num" id="statArtworks">—</div>
+        <div class="stat-label">Artworks</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="statAvailable">—</div>
+        <div class="stat-label">Available</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-image">
+    <div class="hero-img-main"></div>
+    <div class="hero-img-accent"></div>
+  </div>
+</section>
+
+<section class="filters-section">
+  <div class="filters-row">
+    <span class="filter-label">Category</span>
+    <button class="filter-chip active" onclick="filterByCategory('', this)">All</button>
+    <div id="categoryChips"></div>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search artworks..." onkeyup="filterBySearch()"/>
+      <button onclick="filterBySearch()">🔍</button>
+    </div>
+  </div>
+</section>
+
+<section class="gallery-section">
+  <div class="section-header">
+    <h2 class="section-title">Available Works</h2>
+    <span id="resultsCount" style="font-size:0.78rem; color:var(--mid-gray);"></span>
+  </div>
+
+  <div class="gallery-grid" id="galleryGrid">
+    <div class="loading" style="grid-column:1/-1;">Loading artworks...</div>
+  </div>
+
+  <div class="empty-state" id="emptyState">
+    <p>No artworks found.</p>
+  </div>
+</section>
+
+<section class="inspiration-section">
+  <div class="inspiration-inner">
+    <div class="inspiration-header">
+      <h2>Inspiration from the Museum</h2>
+      <span class="insp-tag">Met Museum API</span>
+    </div>
+    <p class="inspiration-sub">Curated works from the <em>Metropolitan Museum of Art</em></p>
+    <div class="museum-grid" id="museumGrid">
+      <div class="loading" style="grid-column:1/-1; color:#888;">Loading museum works...</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2024 ArtHub · <a href="#">Terms</a> · <a href="#">Privacy</a></p>
+</footer>
+
+<script>
+  let allArtworks = [];
+  let currentCategory = '';
+
+  // Check if logged in
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
+  if (user) {
+    const nav = document.getElementById('navActions');
+    if (user.role === 'admin') {
+      nav.innerHTML = `
+        <a href="artwork-add.html" style="font-size:0.78rem; color:var(--mid-gray); text-decoration:none;">Add Artwork</a>
+        <a href="admin-dashboard.html" class="btn-solid">Dashboard</a>
+        <a href="#" onclick="logout()" style="font-size:0.78rem; color:var(--mid-gray); text-decoration:none; margin-left:0.5rem;">Sign out</a>
+      `;
+    } else {
+      nav.innerHTML = `
+        <span style="font-size:0.78rem; color:var(--mid-gray);">Hi, ${user.firstName}</span>
+        <a href="orders.html" class="btn-ghost">My Orders</a>
+        <a href="#" onclick="logout()" style="font-size:0.78rem; color:var(--mid-gray); text-decoration:none;">Sign out</a>
+      `;
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.reload();
+  }
+
+  // Load categories
+  fetch('/api/categories')
+    .then(r => r.json())
+    .then(cats => {
+      const wrap = document.getElementById('categoryChips');
+      cats.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'filter-chip';
+        btn.textContent = c.name;
+        btn.onclick = () => filterByCategory(c._id, btn);
+        wrap.appendChild(btn);
+      });
+    });
+
+  // Load artworks
+  async function loadArtworks() {
+    try {
+      const res = await fetch('/api/artworks');
+      allArtworks = await res.json();
+      document.getElementById('statArtworks').textContent = allArtworks.length;
+      document.getElementById('statAvailable').textContent = allArtworks.filter(a => a.available).length;
+      renderArtworks(allArtworks);
+    } catch (err) {
+      document.getElementById('galleryGrid').innerHTML = '<div class="loading" style="grid-column:1/-1;">Could not load artworks.</div>';
+    }
+  }
+
+  function renderArtworks(artworks) {
+    const grid = document.getElementById('galleryGrid');
+    const empty = document.getElementById('emptyState');
+
+    if (artworks.length === 0) {
+      grid.innerHTML = '';
+      empty.classList.add('show');
+      document.getElementById('resultsCount').textContent = '';
+      return;
+    }
+
+    empty.classList.remove('show');
+    document.getElementById('resultsCount').textContent = `${artworks.length} work${artworks.length !== 1 ? 's' : ''}`;
+
+    grid.innerHTML = artworks.map(a => `
+      <div class="artwork-card">
+        <a href="artwork-detail.html?id=${a._id}" style="text-decoration:none; color:inherit; display:block;">
+          <div class="artwork-img-wrap">
+            ${a.image
+              ? `<img src="${a.image}" alt="${a.title}" />`
+              : `<div class="artwork-img-ph"></div>`
+            }
+            ${!a.available ? `<div class="sold-overlay"><div class="sold-stamp">Sold Out</div></div>` : ''}
+          </div>
+          <div class="artwork-info">
+            <div class="artwork-category">${a.category?.name || ''}</div>
+            <div class="artwork-title">${a.title}</div>
+            <div class="artwork-footer">
+              <span class="artwork-price ${!a.available ? 'sold' : ''}">€${a.price}</span>
+            </div>
+          </div>
+        </a>
+        <div style="padding: 0 1rem 1rem;">
+          <button class="btn-buy" ${!a.available ? 'disabled' : ''} onclick="buyArtwork('${a._id}')">
+            ${a.available ? 'Buy Original' : 'Sold Out'}
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function filterByCategory(categoryId, btn) {
+    currentCategory = categoryId;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilters();
+  }
+
+  function filterBySearch() {
+    applyFilters();
+  }
+
+  function applyFilters() {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    let filtered = allArtworks;
+    if (currentCategory) filtered = filtered.filter(a => a.category?._id === currentCategory);
+    if (query) filtered = filtered.filter(a => a.title.toLowerCase().includes(query));
+    renderArtworks(filtered);
+  }
+
+  function buyArtwork(id) {
+    localStorage.setItem('buyArtworkId', id);
+    window.location.href = 'checkout.html';
+  }
+
+  // Load Met Museum inspiration
+  async function loadMuseum() {
+    try {
+      const searchRes = await fetch('https://collectionapi.metmuseum.org/public/collection/v1/search?hasImages=true&q=painting&departmentId=11');
+      const searchData = await searchRes.json();
+      const ids = searchData.objectIDs.slice(0, 3);
+
+      const works = await Promise.all(ids.map(id =>
+        fetch(`https://collectionapi.metmuseum.org/public/collection/v1/objects/${id}`).then(r => r.json())
+      ));
+
+      const grid = document.getElementById('museumGrid');
+      grid.innerHTML = works.map(w => `
+        <div class="museum-card">
+          ${w.primaryImageSmall
+            ? `<img class="museum-img" src="${w.primaryImageSmall}" alt="${w.title}" />`
+            : `<div class="museum-img-ph"></div>`
+          }
+          <div class="museum-info">
+            <span class="museum-tag">${w.classification || 'Painting'} · ${w.objectDate || '—'}</span>
+            <h4>${w.title}</h4>
+            <p>${w.artistDisplayName || 'Unknown artist'} · The Met Collection</p>
+          </div>
+        </div>
+      `).join('');
+    } catch {
+      document.getElementById('museumGrid').innerHTML = '<div style="color:#666; grid-column:1/-1;">Could not load museum works.</div>';
+    }
+  }
+
+  loadArtworks();
+  loadMuseum();
+</script>
+
+</body>
+</html>

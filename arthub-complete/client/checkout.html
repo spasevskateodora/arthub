@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ArtHub - Checkout</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      color: #111;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav {
+      background-color: #fff;
+      border-bottom: 1px solid #ddd;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav a.logo {
+      font-size: 22px;
+      font-weight: bold;
+      text-decoration: none;
+      color: #111;
+    }
+    nav a.logo span { color: #6D1A2A; }
+    nav a.back { font-size: 13px; color: #777; text-decoration: none; }
+    nav a.back:hover { color: #111; }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 28px;
+      align-items: flex-start;
+    }
+
+    h1 { font-size: 22px; margin-bottom: 4px; }
+    .subtitle { font-size: 13px; color: #777; margin-bottom: 24px; }
+
+    /* ACCOUNT OPTIONS */
+    .account-options {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .account-opt {
+      flex: 1;
+      padding: 14px;
+      border: 2px solid #ddd;
+      cursor: pointer;
+      background: #fff;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+    .account-opt:hover { border-color: #aaa; }
+    .account-opt.selected { border-color: #6D1A2A; }
+
+    .account-opt .opt-icon { font-size: 22px; margin-bottom: 6px; }
+    .account-opt .opt-title { font-size: 13px; font-weight: bold; margin-bottom: 2px; }
+    .account-opt .opt-desc { font-size: 11px; color: #888; }
+
+    /* FORM BOX */
+    .form-box {
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+
+    .form-box h2 {
+      font-size: 15px;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 4px;
+      margin-top: 14px;
+    }
+
+    label span.req { color: #6D1A2A; }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    textarea {
+      width: 100%;
+      padding: 9px 10px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      font-family: Arial, sans-serif;
+      box-sizing: border-box;
+      background: #fff;
+      color: #111;
+    }
+
+    input:focus, textarea:focus { border-color: #111; outline: none; }
+    input.error { border-color: #b00020; }
+
+    .err-msg {
+      font-size: 12px;
+      color: #b00020;
+      display: none;
+      margin-top: 3px;
+    }
+    .err-msg.show { display: block; }
+
+    .row-2 { display: flex; gap: 12px; }
+    .row-2 > div { flex: 1; }
+
+    /* REGISTER SECTION — hidden by default */
+    .register-section {
+      display: none;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px dashed #ddd;
+    }
+    .register-section.show { display: block; }
+
+    .register-section p {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 10px;
+    }
+
+    /* NOTE */
+    .note-box {
+      background: #fffbf0;
+      border: 1px solid #e0c060;
+      padding: 12px 14px;
+      font-size: 12px;
+      color: #7a6000;
+      margin-top: 14px;
+      line-height: 1.6;
+    }
+
+    /* ORDER SUMMARY */
+    .order-summary {
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 20px;
+      position: sticky;
+      top: 20px;
+    }
+
+    .order-summary h2 {
+      font-size: 15px;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .summary-img {
+      width: 100%;
+      aspect-ratio: 3/4;
+      background: linear-gradient(160deg, #222 0%, #666 50%, #aaa 100%);
+      margin-bottom: 14px;
+    }
+
+    .summary-title { font-size: 16px; font-weight: bold; margin-bottom: 2px; }
+    .summary-artist { font-size: 13px; color: #777; margin-bottom: 14px; }
+
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 6px 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .summary-line:last-child { border-bottom: none; }
+    .summary-line .label { color: #777; }
+    .summary-line.total { font-weight: bold; font-size: 15px; margin-top: 4px; }
+    .summary-line.total .val { color: #6D1A2A; }
+
+    /* SUBMIT */
+    .btn-place-order {
+      width: 100%;
+      padding: 13px;
+      background: #6D1A2A;
+      color: white;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 16px;
+      letter-spacing: 1px;
+    }
+    .btn-place-order:hover { background: #8B2236; }
+
+    .secure-note {
+      font-size: 11px;
+      color: #aaa;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    /* SUCCESS */
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 60px 20px;
+      grid-column: 1 / -1;
+    }
+    .success-screen.show { display: block; }
+    .success-screen .icon { font-size: 48px; margin-bottom: 16px; }
+    .success-screen h2 { font-size: 24px; margin-bottom: 8px; }
+    .success-screen p { font-size: 14px; color: #777; margin-bottom: 20px; line-height: 1.7; }
+    .success-screen a {
+      display: inline-block;
+      padding: 11px 28px;
+      background: #6D1A2A;
+      color: white;
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      color: #bbb;
+      border-top: 1px solid #eee;
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Art<span>Hub</span></a>
+  <a href="artwork-detail.html" class="back">← Back to artwork</a>
+</nav>
+
+<div class="container" id="mainContainer">
+
+  <!-- LEFT: FORM -->
+  <div id="formSide">
+    <h1>Complete your order</h1>
+    <p class="subtitle">Fill in your details to purchase this artwork.</p>
+
+    <!-- ACCOUNT OPTIONS -->
+    <div class="account-options">
+      <div class="account-opt selected" id="optGuest" onclick="selectOption('guest')">
+        <div class="opt-icon">👤</div>
+        <div class="opt-title">Guest Checkout</div>
+        <div class="opt-desc">No account needed</div>
+      </div>
+      <div class="account-opt" id="optRegister" onclick="selectOption('register')">
+        <div class="opt-icon">✨</div>
+        <div class="opt-title">Create Account</div>
+        <div class="opt-desc">Track your orders</div>
+      </div>
+      <div class="account-opt" id="optLogin" onclick="selectOption('login')">
+        <div class="opt-icon">🔑</div>
+        <div class="opt-title">Sign In</div>
+        <div class="opt-desc">Already have account</div>
+      </div>
+    </div>
+
+    <!-- BUYER DETAILS -->
+    <div class="form-box">
+      <h2>Your Details</h2>
+
+      <div class="row-2">
+        <div>
+          <label for="firstName">First Name <span class="req">*</span></label>
+          <input type="text" id="firstName" placeholder="Ana" />
+          <div class="err-msg" id="firstNameErr">Required.</div>
+        </div>
+        <div>
+          <label for="lastName">Last Name <span class="req">*</span></label>
+          <input type="text" id="lastName" placeholder="Petrov" />
+          <div class="err-msg" id="lastNameErr">Required.</div>
+        </div>
+      </div>
+
+      <label for="email">Email <span class="req">*</span></label>
+      <input type="email" id="email" placeholder="you@email.com" />
+      <div class="err-msg" id="emailErr">Please enter a valid email.</div>
+
+      <label for="phone">Phone Number</label>
+      <input type="text" id="phone" placeholder="+389 70 000 000" />
+
+      <label for="address">Address <span class="req">*</span></label>
+      <input type="text" id="address" placeholder="Street and number" />
+      <div class="err-msg" id="addressErr">Required.</div>
+
+      <div class="row-2">
+        <div>
+          <label for="city">City <span class="req">*</span></label>
+          <input type="text" id="city" placeholder="Skopje" />
+          <div class="err-msg" id="cityErr">Required.</div>
+        </div>
+        <div>
+          <label for="country">Country <span class="req">*</span></label>
+          <input type="text" id="country" placeholder="North Macedonia" />
+          <div class="err-msg" id="countryErr">Required.</div>
+        </div>
+      </div>
+
+      <label for="note">Note for the artist (optional)</label>
+      <textarea id="note" placeholder="Any special instructions or message..."></textarea>
+
+      <!-- REGISTER SECTION -->
+      <div class="register-section" id="registerSection">
+        <p>Create a password to save your account and track orders:</p>
+        <label for="regPassword">Password <span class="req">*</span></label>
+        <input type="password" id="regPassword" placeholder="Min. 6 characters" />
+        <div class="err-msg" id="regPwErr">Password must be at least 6 characters.</div>
+        <label for="regPasswordConfirm">Confirm Password <span class="req">*</span></label>
+        <input type="password" id="regPasswordConfirm" placeholder="Repeat password" />
+        <div class="err-msg" id="regPwConfirmErr">Passwords do not match.</div>
+      </div>
+
+      <!-- SIGN IN SECTION -->
+      <div class="register-section" id="loginSection">
+        <p>Sign in with your existing account:</p>
+        <label for="loginPassword">Password <span class="req">*</span></label>
+        <input type="password" id="loginPassword" placeholder="Your password" />
+        <div class="err-msg" id="loginPwErr">Please enter your password.</div>
+      </div>
+
+      <div class="note-box">
+        📌 This is an original artwork. After placing your order, the artist will contact you directly via email to arrange collection or delivery.
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RIGHT: ORDER SUMMARY -->
+  <div id="summarySide">
+    <div class="order-summary">
+      <h2>Order Summary</h2>
+      <div class="summary-img"></div>
+      <div class="summary-title">Silence in Blue</div>
+      <div class="summary-artist">by Elena Moreau · Abstract</div>
+
+      <div class="summary-line">
+        <span class="label">Artwork</span>
+        <span class="val">€480.00</span>
+      </div>
+      <div class="summary-line">
+        <span class="label">Price</span>
+        
+      </div>
+      <div class="summary-line total">
+        <span class="label">Total</span>
+        <span class="val">€480.00</span>
+      </div>
+
+      <button class="btn-place-order" onclick="placeOrder()">Place Order</button>
+      <p class="secure-note">🔒 Your details are kept private</p>
+    </div>
+  </div>
+
+  <!-- SUCCESS SCREEN -->
+  <div class="success-screen" id="successScreen">
+    <div class="icon">✓</div>
+    <h2>Order placed successfully!</h2>
+    <p>
+      Thank you for your purchase.<br>
+      A confirmation has been sent to your email.<br>
+      The artist will contact you shortly to arrange collection.
+    </p>
+    <a href="index.html">Back to Gallery</a>
+  </div>
+
+</div>
+
+<footer>© 2024 ArtHub</footer>
+
+<script>
+  let currentOption = 'guest';
+
+  function selectOption(opt) {
+    currentOption = opt;
+    document.querySelectorAll('.account-opt').forEach(el => el.classList.remove('selected'));
+    document.getElementById('opt' + opt.charAt(0).toUpperCase() + opt.slice(1)).classList.add('selected');
+
+    document.getElementById('registerSection').classList.toggle('show', opt === 'register');
+    document.getElementById('loginSection').classList.toggle('show', opt === 'login');
+  }
+
+  function placeOrder() {
+    let ok = true;
+
+    function check(id, errId, condition) {
+      document.getElementById(id).classList.toggle('error', !condition);
+      document.getElementById(errId).classList.toggle('show', !condition);
+      if (!condition) ok = false;
+    }
+
+    check('firstName', 'firstNameErr', document.getElementById('firstName').value.trim().length > 0);
+    check('lastName', 'lastNameErr', document.getElementById('lastName').value.trim().length > 0);
+    check('email', 'emailErr', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(document.getElementById('email').value.trim()));
+    check('address', 'addressErr', document.getElementById('address').value.trim().length > 0);
+    check('city', 'cityErr', document.getElementById('city').value.trim().length > 0);
+    check('country', 'countryErr', document.getElementById('country').value.trim().length > 0);
+
+    if (currentOption === 'register') {
+      const pw = document.getElementById('regPassword').value;
+      const cpw = document.getElementById('regPasswordConfirm').value;
+      check('regPassword', 'regPwErr', pw.length >= 6);
+      check('regPasswordConfirm', 'regPwConfirmErr', pw === cpw && cpw.length > 0);
+    }
+
+    if (currentOption === 'login') {
+      check('loginPassword', 'loginPwErr', document.getElementById('loginPassword').value.length >= 6);
+    }
+
+    if (ok) {
+      document.getElementById('formSide').style.display = 'none';
+      document.getElementById('summarySide').style.display = 'none';
+      document.getElementById('successScreen').classList.add('show');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+</script>
+
+</body>
+</html>

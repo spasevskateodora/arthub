@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ArtHub - Edit Artwork</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      color: #111;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav {
+      background-color: #fff;
+      border-bottom: 1px solid #ddd;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav a.logo {
+      font-size: 22px;
+      font-weight: bold;
+      text-decoration: none;
+      color: #111;
+    }
+    nav a.logo span { color: #6D1A2A; }
+
+    .nav-right {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .nav-right a {
+      font-size: 13px;
+      color: #777;
+      text-decoration: none;
+    }
+    .nav-right a:hover { color: #111; }
+    .admin-badge {
+      font-size: 11px;
+      background: #6D1A2A;
+      color: white;
+      padding: 2px 8px;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+
+    .page-header h1 { font-size: 22px; margin-bottom: 4px; }
+    .page-header p { font-size: 13px; color: #777; }
+
+    .btn-delete-top {
+      padding: 8px 16px;
+      background: none;
+      border: 1px solid #ccc;
+      color: #b00020;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-delete-top:hover { border-color: #b00020; background: #fff5f5; }
+
+    .form-box {
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 28px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 5px;
+      margin-top: 16px;
+    }
+    label span.required { color: #6D1A2A; }
+
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 9px 10px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      font-family: Arial, sans-serif;
+      box-sizing: border-box;
+      background: #fff;
+      color: #111;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: #111;
+      outline: none;
+    }
+
+    input.error, select.error { border-color: #b00020; }
+
+    .err-msg {
+      font-size: 12px;
+      color: #b00020;
+      display: none;
+      margin-top: 3px;
+    }
+    .err-msg.show { display: block; }
+
+    textarea { resize: vertical; min-height: 100px; }
+
+    .row-2 { display: flex; gap: 16px; }
+    .row-2 > div { flex: 1; }
+
+    /* Current image + change */
+    .current-image-wrap {
+      margin-top: 5px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .current-image {
+      width: 100%;
+      max-width: 300px;
+      aspect-ratio: 3/4;
+      background: linear-gradient(160deg, #222 0%, #666 50%, #aaa 100%);
+      display: block;
+    }
+
+    .change-image-btn {
+      display: block;
+      margin-top: 8px;
+      font-size: 13px;
+      color: #6D1A2A;
+      cursor: pointer;
+      text-decoration: underline;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .upload-new {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .upload-new.show { display: block; }
+
+    .upload-area {
+      border: 2px dashed #ccc;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+    .upload-area:hover { border-color: #6D1A2A; }
+    .upload-area.has-image { border-style: solid; border-color: #111; padding: 0; }
+
+    .upload-area input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .upload-placeholder { pointer-events: none; }
+    .upload-placeholder .icon { font-size: 28px; margin-bottom: 6px; }
+    .upload-placeholder p { font-size: 13px; color: #888; margin: 0; }
+    .upload-placeholder p span { color: #6D1A2A; text-decoration: underline; }
+
+    #newImagePreview {
+      display: none;
+      width: 100%;
+      max-height: 280px;
+      object-fit: contain;
+      background: #f2f2f2;
+    }
+
+    /* availability */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .toggle-row label { margin: 0; font-size: 14px; color: #111; cursor: pointer; }
+    .toggle-row input[type="checkbox"] {
+      width: 16px; height: 16px;
+      accent-color: #6D1A2A; cursor: pointer;
+    }
+    .toggle-hint { font-size: 12px; color: #aaa; margin-top: 4px; }
+
+    /* last updated note */
+    .last-updated {
+      font-size: 12px;
+      color: #aaa;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #eee;
+    }
+
+    /* actions */
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+
+    .btn-save {
+      padding: 10px 28px;
+      background: #6D1A2A;
+      color: white;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .btn-save:hover { background: #8B2236; }
+
+    .btn-cancel {
+      padding: 10px 28px;
+      background: none;
+      color: #555;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+    .btn-cancel:hover { border-color: #111; color: #111; }
+
+    /* success */
+    .success-msg {
+      display: none;
+      background: #f0f7f0;
+      border: 1px solid #b2d8b2;
+      padding: 14px 16px;
+      font-size: 13px;
+      color: #2e6b2e;
+      margin-bottom: 20px;
+    }
+    .success-msg.show { display: block; }
+
+    /* DELETE MODAL */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-bg.open { display: flex; }
+    .modal {
+      background: #fff;
+      padding: 28px;
+      width: 360px;
+      max-width: 90vw;
+      border: 1px solid #ddd;
+      position: relative;
+    }
+    .modal h3 { font-size: 18px; margin-bottom: 10px; }
+    .modal p { font-size: 13px; color: #555; margin-bottom: 20px; line-height: 1.6; }
+    .modal-close {
+      position: absolute;
+      top: 12px; right: 14px;
+      background: none; border: none;
+      font-size: 18px; cursor: pointer; color: #888;
+    }
+    .modal-actions { display: flex; gap: 10px; }
+    .modal-actions button {
+      flex: 1; padding: 10px;
+      font-size: 13px; cursor: pointer; border: 1px solid #ccc;
+      background: none;
+    }
+    .modal-actions .confirm-delete {
+      background: #b00020; color: white; border-color: #b00020;
+    }
+    .modal-actions .confirm-delete:hover { background: #8a0018; }
+    .modal-actions .cancel-btn:hover { border-color: #111; }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      color: #bbb;
+      border-top: 1px solid #eee;
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Art<span>Hub</span></a>
+  <div class="nav-right">
+    <span class="admin-badge">Admin</span>
+    <a href="index.html">Gallery</a>
+    <a href="artwork-add.html">Add Artwork</a>
+    <a href="admin-dashboard.html">Dashboard</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div class="page-header">
+    <div>
+      <h1>Edit Artwork</h1>
+      <p>Update the details for this artwork.</p>
+    </div>
+    <button class="btn-delete-top" onclick="openDeleteModal()">🗑 Delete Artwork</button>
+  </div>
+
+  <div class="success-msg" id="successMsg">
+    ✓ Artwork updated successfully! <a href="index.html" style="color:#2e6b2e;">View in gallery →</a>
+  </div>
+
+  <div class="form-box">
+
+    <!-- CURRENT IMAGE -->
+    <label>Artwork Image</label>
+    <div class="current-image-wrap">
+      <div class="current-image" id="currentImage"></div>
+    </div>
+    <button class="change-image-btn" onclick="toggleUpload()">Change image</button>
+
+    <div class="upload-new" id="uploadNew">
+      <div class="upload-area" id="uploadArea">
+        <input type="file" accept="image/*" id="imageInput" onchange="previewNewImage(event)" />
+        <div class="upload-placeholder" id="uploadPlaceholder">
+          <div class="icon">🖼️</div>
+          <p>Drag & drop or <span>browse</span></p>
+        </div>
+        <img id="newImagePreview" alt="New preview" />
+      </div>
+    </div>
+
+    <!-- TITLE -->
+    <label for="title">Title <span class="required">*</span></label>
+    <input type="text" id="title" value="Silence in Blue" />
+    <div class="err-msg" id="titleErr">Please enter a title.</div>
+
+    <!-- DESCRIPTION -->
+    <label for="description">Description</label>
+    <textarea id="description">A meditative piece exploring stillness through layers of cool tones and fluid brushwork.</textarea>
+
+    <!-- CATEGORY + MEDIUM -->
+    <div class="row-2">
+      <div>
+        <label for="category">Category <span class="required">*</span></label>
+        <select id="category">
+          <option value="">— Select —</option>
+          <option value="abstract" selected>Abstract</option>
+          <option value="realism">Realism</option>
+          <option value="portrait">Portrait</option>
+          <option value="landscape">Landscape</option>
+          <option value="digital">Digital</option>
+        </select>
+        <div class="err-msg" id="categoryErr">Please select a category.</div>
+      </div>
+      <div>
+        <label for="medium">Medium</label>
+        <select id="medium">
+          <option value="">— Select —</option>
+          <option value="oil" selected>Oil on canvas</option>
+          <option value="acrylic">Acrylic on canvas</option>
+          <option value="watercolor">Watercolor</option>
+          <option value="pencil">Pencil / Charcoal</option>
+          <option value="digital">Digital</option>
+          <option value="mixed">Mixed media</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- DIMENSIONS + YEAR -->
+    <div class="row-2">
+      <div>
+        <label for="dimensions">Dimensions (cm)</label>
+        <input type="text" id="dimensions" value="60 × 80" />
+      </div>
+      <div>
+        <label for="year">Year</label>
+        <input type="number" id="year" value="2023" min="1900" max="2099" />
+      </div>
+    </div>
+
+    <!-- PRICE -->
+    <label for="price">Price (EUR) <span class="required">*</span></label>
+    <input type="number" id="price" value="480" min="1" />
+    <div class="err-msg" id="priceErr">Please enter a valid price.</div>
+
+    <!-- AVAILABILITY -->
+    <div class="toggle-row">
+      <input type="checkbox" id="available" checked />
+      <label for="available">Available for purchase</label>
+    </div>
+    <p class="toggle-hint">Uncheck to mark as Sold Out.</p>
+
+    <p class="last-updated">Last updated: March 12, 2024</p>
+
+    <div class="form-actions">
+      <button class="btn-save" onclick="saveChanges()">Save Changes</button>
+      <a href="index.html" class="btn-cancel">Cancel</a>
+    </div>
+
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal-bg" id="deleteModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeDeleteModal()">✕</button>
+    <h3>Delete Artwork?</h3>
+    <p>Are you sure you want to delete <strong>Silence in Blue</strong>? This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="cancel-btn" onclick="closeDeleteModal()">Cancel</button>
+      <button class="confirm-delete" onclick="confirmDelete()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<footer>© 2024 ArtHub</footer>
+
+<script>
+  function toggleUpload() {
+    const el = document.getElementById('uploadNew');
+    el.classList.toggle('show');
+  }
+
+  function previewNewImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const preview = document.getElementById('newImagePreview');
+      const placeholder = document.getElementById('uploadPlaceholder');
+      const area = document.getElementById('uploadArea');
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+      placeholder.style.display = 'none';
+      area.classList.add('has-image');
+
+      // Also update current image display
+      document.getElementById('currentImage').style.background = 'none';
+      document.getElementById('currentImage').style.backgroundImage = `url(${e.target.result})`;
+      document.getElementById('currentImage').style.backgroundSize = 'cover';
+      document.getElementById('currentImage').style.backgroundPosition = 'center';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function saveChanges() {
+    let ok = true;
+
+    const title = document.getElementById('title').value.trim();
+    document.getElementById('title').classList.toggle('error', !title);
+    document.getElementById('titleErr').classList.toggle('show', !title);
+    if (!title) ok = false;
+
+    const category = document.getElementById('category').value;
+    document.getElementById('category').classList.toggle('error', !category);
+    document.getElementById('categoryErr').classList.toggle('show', !category);
+    if (!category) ok = false;
+
+    const price = document.getElementById('price').value;
+    const priceOk = price && parseFloat(price) > 0;
+    document.getElementById('price').classList.toggle('error', !priceOk);
+    document.getElementById('priceErr').classList.toggle('show', !priceOk);
+    if (!priceOk) ok = false;
+
+    if (ok) {
+      document.getElementById('successMsg').classList.add('show');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  function openDeleteModal() {
+    document.getElementById('deleteModal').classList.add('open');
+  }
+
+  function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('open');
+  }
+
+  function confirmDelete() {
+    closeDeleteModal();
+    window.location.href = 'index.html';
+  }
+
+  document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) closeDeleteModal();
+  });
+</script>
+
+</body>
+</html>
