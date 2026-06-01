@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { getArtworks, getCategories } from '../services/api';
-import { searchMuseum } from '../services/museum';
+import { getDecor } from '../services/unsplash';
 import ArtworkCard from '../components/ArtworkCard';
+console.log("DECOR:", getDecor);
 
 const Gallery = () => {
   const [artworks, setArtworks] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [museum, setMuseum] = useState([]);
+  const [decor, setDecor] = useState([]);
   const [activeCategory, setActiveCategory] = useState('');
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -19,8 +20,8 @@ const Gallery = () => {
         setLoading(false);
       })
       .catch(() => setLoading(false));
-
-    searchMuseum('painting', 3).then(setMuseum);
+  
+    getDecor().then(setDecor);
   }, []);
 
   const filtered = artworks.filter(a => {
@@ -99,34 +100,54 @@ const Gallery = () => {
           {filtered.map(a => <ArtworkCard key={a._id} artwork={a} />)}
         </div>
       </section>
-
-      {/* Museum Inspiration */}
       <section style={{ background: '#0D0D0D', color: '#FAFAFA', padding: '5rem 3rem' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '0.6rem' }}>
-            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '2rem', fontWeight: 300 }}>Inspiration from the Museum</h2>
-            <span style={{ fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8B2236', border: '1px solid #6D1A2A', padding: '0.2rem 0.6rem' }}>Met Museum API</span>
-          </div>
-          <p style={{ fontSize: '0.85rem', color: '#888', marginBottom: '2.5rem' }}>
-            Curated works from the <em style={{ color: '#8B2236' }}>Metropolitan Museum of Art</em>
-          </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
-            {museum.length === 0 && <div style={{ color: '#666', gridColumn: '1/-1' }}>Loading museum works...</div>}
-            {museum.map(w => (
-  <a key={w.objectID} href={w.objectURL} target="_blank" rel="noreferrer" style={{ border: '1px solid #2a2a2a', display: 'block', textDecoration: 'none' }}>
-                <img src={w.primaryImageSmall} alt={w.title} style={{ width: '100%', aspectRatio: '4/3', objectFit: 'cover', display: 'block' }} />
-                <div style={{ padding: '1rem', borderTop: '1px solid #2a2a2a' }}>
-                  <div style={{ fontSize: '0.62rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8B2236', marginBottom: '0.4rem' }}>
-                    {w.classification || 'Painting'} · {w.objectDate || '—'}
-                  </div>
-                  <h4 style={{ fontFamily: 'Georgia, serif', fontSize: '1rem', fontWeight: 400, color: '#FAFAFA', marginBottom: '0.3rem' }}>{w.title}</h4>
-                  <p style={{ fontSize: '0.73rem', color: '#666' }}>{w.artistDisplayName || 'Unknown'} · The Met</p>
-                </div>
-                </a>
-            ))}
-          </div>
+  <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+
+    <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '2rem', fontWeight: 300 }}>
+      Home Decor Inspiration
+    </h2>
+
+    <p style={{ fontSize: '0.85rem', color: '#888', marginBottom: '2.5rem' }}>
+      Ideas from Unsplash
+    </p>
+
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
+
+      {decor.length === 0 && (
+        <div style={{ color: '#666', gridColumn: '1/-1' }}>
+          Loading...
         </div>
-      </section>
+      )}
+
+      {decor.map(item => (
+        <a
+          key={item.id}
+          href={item.links.html}
+          target="_blank"
+          rel="noreferrer"
+          style={{ border: '1px solid #2a2a2a', display: 'block', textDecoration: 'none' }}
+        >
+          <img
+            src={item.urls.small}
+            alt={item.alt_description}
+            style={{ width: '100%', aspectRatio: '4/3', objectFit: 'cover' }}
+          />
+
+          <div style={{ padding: '1rem', borderTop: '1px solid #2a2a2a' }}>
+            <h4 style={{ fontFamily: 'Georgia, serif', fontSize: '1rem', color: '#FAFAFA' }}>
+              {item.alt_description || 'Interior Design'}
+            </h4>
+            <p style={{ fontSize: '0.73rem', color: '#666' }}>
+              Photo by {item.user.name}
+            </p>
+          </div>
+        </a>
+      ))}
+
+    </div>
+  </div>
+</section>
+      
     </div>
   );
 };
