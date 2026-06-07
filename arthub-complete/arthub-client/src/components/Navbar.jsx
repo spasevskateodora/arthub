@@ -30,7 +30,7 @@ const Navbar = () => {
       <ul style={styles.links}>
         <li><Link to="/" style={styles.link}>Gallery</Link></li>
         <li><Link to="/search" style={styles.link}>Browse</Link></li>
-        <li><Link to="/inspiration" style={styles.link}>Inspiration</Link></li>
+
       </ul>
 
       <div style={styles.actions}>

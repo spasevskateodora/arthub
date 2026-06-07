@@ -156,8 +156,8 @@ export const Checkout = () => {
       <div style={{ fontSize: '48px', marginBottom: '16px' }}>✓</div>
       <h2 style={{ fontSize: '24px', marginBottom: '8px' }}>Order placed successfully!</h2>
       <p style={{ fontSize: '14px', color: '#777', marginBottom: '20px', lineHeight: 1.7 }}>
-        Thank you! A confirmation has been sent to your email.<br />The artist will contact you shortly.
-      </p>
+  Thank you for your order!<br />The artist will contact you shortly.
+</p>
       <a href="/" style={{ display: 'inline-block', padding: '11px 28px', background: '#6D1A2A', color: 'white', textDecoration: 'none', fontSize: '13px' }}>Back to Gallery</a>
     </div>
   );
