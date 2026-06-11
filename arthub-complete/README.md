@@ -1,4 +1,4 @@
-# ArtHub — Original Art Marketplace
+# ArtHub - Original Art Marketplace
 
 A full-stack web application for browsing and purchasing original artworks.
 
@@ -52,15 +52,13 @@ http://localhost:3001
 
 ## User Roles
 
-| Role | Access |
-|------|--------|
-| Guest | Browse gallery, view artworks, read reviews |
-| Buyer | Register, place orders, leave reviews |
-| Admin | Full access — add/edit/delete artworks, manage orders, view dashboard |
+guest- can browse and buy artworks
+buyer- can browse, buy artworks and leave reviews, when ordering info is automaticlly filled
+admin-full access
 
 ## Admin Login
-- Email: `admin@arthub.com`
-- Password: `admin123`
+Email: admin@arthub.com
+Password: admin123
 
 ## API Documentation
 ```
@@ -68,26 +66,16 @@ http://localhost:3000/api/docs
 ```
 
 ## External API
-- **Met Museum API** — museum artworks for inspiration section
-
----
+Unsplash API - used for home decor inspiration images
 
 ## Validation Rules
 
-| Field | Rule |
-|-------|------|
-| Email | Must match regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ |
-| Password | Minimum 6 characters |
-| First/Last name | Required, non-empty |
-| Price | Number, minimum 1 |
-| Year | Number, 1900–2099 |
-| Image | JPG, PNG or WEBP, max 10MB |
-
----
+Email must be valid format
+Password minimum 6 characters
 
 ## MongoDB Collections
-1. **Users** — buyers and admin
-2. **Artworks** — original artworks (depends on Categories)
-3. **Categories** — Abstract, Realism, Portrait, Landscape, Digital
-4. **Orders** — purchase orders (depends on Artworks)
-5. **Reviews** — artwork reviews (depends on Artworks)
+1. Users - buyers and admin
+2. Artworks - original artworks (depends on Categories)
+3. Categories - Abstract, Realism, Portrait, Landscape, Digital
+4. Orders - purchase orders 
+5. Reviews - artwork reviews 
