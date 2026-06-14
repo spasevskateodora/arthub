@@ -1,4 +1,4 @@
-# ArtHub — Original Art Marketplace
+# ArtHub - Original Art Marketplace
 
 Full-stack web app for browsing and purchasing original artworks.
 
@@ -20,14 +20,14 @@ DevOps: Docker, Docker Compose
    npm install
    npm start
 4. Open browser: http://localhost:3001
-5. Seed database: http://localhost:3000/db → click Setup
+5. Seed database: http://localhost:3000/db - click Setup
 
 ---
 
 ## User Roles
-- Guest — browse gallery and view artworks
-- Buyer — register, place orders, leave reviews
-- Admin — full access, add/edit/delete artworks, manage orders
+- Guest - browse gallery and view artworks
+- Buyer - register, place orders, leave reviews
+- Admin - full access, add/edit/delete artworks, manage orders
 
 Admin login: admin@arthub.com / admin123
 
@@ -39,7 +39,7 @@ http://localhost:3000/api/docs
 ---
 
 ## External API
-Unsplash API — art inspiration images on home page
+Unsplash API - art inspiration images on home page
 
 ---
 
