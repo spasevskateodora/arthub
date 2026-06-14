@@ -1,81 +1,51 @@
-# ArtHub - Original Art Marketplace
+# ArtHub — Original Art Marketplace
 
-A full-stack web application for browsing and purchasing original artworks.
+Full-stack web app for browsing and purchasing original artworks.
 
 ## Tech Stack
-- **Frontend:** React (SPA), React Router, Axios, Chart.js
-- **Backend:** Node.js, Express, MongoDB, Mongoose
-- **Auth:** JWT, bcryptjs
-- **Email:** Nodemailer
-- **Docs:** Swagger UI
-- **DevOps:** Docker, Docker Compose
+Frontend: React, React Router, Axios, Chart.js
+Backend: Node.js, Express, MongoDB, Mongoose
+Auth: JWT, bcryptjs
+DevOps: Docker, Docker Compose
 
 ---
 
-## How to run locally with Docker
+## How to run
 
-### Requirements
-- Docker Desktop installed and running
-
-### Steps
-
-1. Open terminal in the `arthub-complete` folder
-
-2. Start everything:
-```
-docker-compose up
-```
-
-3. Open browser:
-```
-http://localhost:3000
-```
-
-4. Seed the database:
-```
-http://localhost:3000/db → click "Setup"
-```
-
-5. Start React (in a second terminal):
-```
-cd arthub-client
-npm install
-npm start
-```
-
-6. React app runs on:
-```
-http://localhost:3001
-```
+1. Open terminal in `arthub-complete` folder
+2. Start server and database:
+   docker-compose up
+3. Open second terminal, start React:
+   cd arthub-client
+   npm install
+   npm start
+4. Open browser: http://localhost:3001
+5. Seed database: http://localhost:3000/db → click Setup
 
 ---
 
 ## User Roles
+- Guest — browse gallery and view artworks
+- Buyer — register, place orders, leave reviews
+- Admin — full access, add/edit/delete artworks, manage orders
 
-guest- can browse and buy artworks
-buyer- can browse, buy artworks and leave reviews, when ordering info is automaticlly filled
-admin-full access
+Admin login: admin@arthub.com / admin123
 
-## Admin Login
-Email: admin@arthub.com
-Password: admin123
+---
 
-## API Documentation
-```
+## API Docs
 http://localhost:3000/api/docs
-```
+
+---
 
 ## External API
-Unsplash API - used for home decor inspiration images
+Unsplash API — art inspiration images on home page
 
-## Validation Rules
-
-Email must be valid format
-Password minimum 6 characters
+---
 
 ## MongoDB Collections
-1. Users - buyers and admin
-2. Artworks - original artworks (depends on Categories)
-3. Categories - Abstract, Realism, Portrait, Landscape, Digital
-4. Orders - purchase orders 
-5. Reviews - artwork reviews 
+1. Users
+2. Artworks
+3. Categories
+4. Orders
+5. Reviews
